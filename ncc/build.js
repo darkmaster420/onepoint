@@ -1,4 +1,4 @@
-//修改文件后 可以通过此脚本重新编译发布
+//After modifying the file, you can recompile and publish it through this script.
 const {readdirSync, writeFileSync} = require('fs');
 const ncc = require('@vercel/ncc');
 

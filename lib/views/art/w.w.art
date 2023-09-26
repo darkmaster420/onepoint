@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en-us">
 
 <head>
     <meta charset="utf-8">
-    <meta name="github" content="https://github.com/ukuq/onepoint">
+    <meta name="github" content="https://github.com/darkmaster420/onepoint">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" href="{{ $V.site.logo }}">
     <meta name="referrer" content="same-origin">
@@ -135,20 +135,55 @@
     {{ set type=$V.previewType }}
     {{ set url=$V.downloadUrl }}
     {{ set oUrl=$V.previewHref($V.file,false)}}
+    {{ set vUrl=vlc://{{ oUrl }}}}
+
+    <script src="https://cdn.staticfile.org/clipboard.js/2.0.11/clipboard.min.js"></script>
     <div class="input-group">
-        <input type="url" class="form-control" id="op-share-url">
-        <div class="input-group-append">
-            <button type="button" class="btn btn-outline-secondary" id="op-share-btn"
-                    data-clipboard-target="#op-share-url" data-clipboard-action="cut">复 制
-            </button>
-            <a type="button" class="btn btn-outline-secondary" href="{{ oUrl }}" target="_blank">下 载</a>
-        </div>
-    </div>
+    <input type="url" class="form-control" id="op-share-url">
+    <div class="input-group-append">
+    <button type="button" class="btn btn-outline-secondary" id="op-share-btn"
+                    data-clipboard-target="#op-share-url" data-clipboard-action="cut">Copy Link
+                    </button>
+            <a type="button" class="btn btn-outline-secondary" href="{{ oUrl }}" target="_blank">Download File</a>
+            <a type="button" class="btn btn-outline-secondary" href="{{ vUrl }}" target="_blank">Play With VLC</a>
+            </div></div>
+    // Initialize Clipboard.js 
+    <script>new ClipboardJS("#op-share-btn");</script>
 
     <div class="border rounded my-3 p-3" id="op-file">
         {{ if type === 'image' }}
-        <img src="{{ url }}" class="rounded mx-auto d-block img-fluid" max-width="100%" alt="图片加载失败">
-        {{ else if type === 'video' || $V.file.name.endsWith('.m3u8') }}
+        <img src="{{ url }}" class="rounded mx-auto d-block img-fluid" max-width="100%" alt="Image loading failed">
+        {{ else if type === 'video' }}
+        // Initialize Vidstack
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/defaults.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/community-skin/video.min.css" />
+        <script type="module" src="https://cdn.jsdelivr.net/npm/vidstack/dist/cdn/prod.js">
+        </script>
+        // Embed Player
+        <media-player title="{{ oUrl }}" crossorigin>
+        <media-outlet>
+        <source src="{{ oUrl }}" type="video/mp4" />
+        </media-outlet>
+        <media-community-skin></media-community-skin>
+        </media-player>
+        {{ else if $V.file.name.endsWith('.mkv) }}
+        // File is mkv
+        // Initialize Vidstack
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/defaults.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/community-skin/video.min.css" />
+        <script type="module" src="https://cdn.jsdelivr.net/npm/vidstack/dist/cdn/prod.js">
+        </script>
+        // Embed Player
+        <media-player title="{{ oUrl }}" crossorigin>
+        <media-outlet>
+        <source src="{{ oUrl }}" type="video/mp4" />
+        </media-outlet>
+        <media-community-skin></media-community-skin>
+        </media-player>
+        <div>File is mkv so you may have issues with sound or video if you do click play with vlc</div>
+        {{ else if $V.file.name.endsWith('.m3u8') }}
+        // File is m3u8
+        // Embed Player 
         <div id="op-preview-video" data-url="{{ url }}"></div>
         <script src="//cdn.staticfile.org/hls.js/1.0.4/hls.min.js"></script>
         <script src="//cdn.staticfile.org/flv.js/1.5.0/flv.min.js"></script>
@@ -160,17 +195,20 @@
                 video: {url: dpElement.getAttribute('data-url'), pic: '', type: 'auto'},
             });
         </script>
-        {{ else if type === 'audio' }}
-        <audio src="{{ url }}" controls autoplay style="width: 75%;" class="rounded mx-auto d-block"></audio>
+        {{ else if type === 'audio' || $V.file.name.endsWith('.flac') }}
+        <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+        <audio id="player" controls autoplay><source src="{{ url }}" type="audio/mp3" /></audio>
+        <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+        <script>const player = new Plyr('#player');</script>
         {{ else if type === 'office' }}
         <ul style="margin: 0;">
             <li><a target="_blank"
-                   href="https://view.officeapps.live.com/op/view.aspx?src={{ $V.encodeURIComponent(url) }}">使用 office
+                   href="https://view.officeapps.live.com/op/view.aspx?src={{ $V.encodeURIComponent(url) }}">Use office
                 apps
-                预览</a></li>
-            <li><a target="_blank" href="http://api.idocv.com/view/url?url={{ $V.encodeURIComponent(url) }}">使用 I Doc
+                Preview</a></li>
+            <li><a target="_blank" href="http://api.idocv.com/view/url?url={{ $V.encodeURIComponent(url) }}">Use I Doc
                 View
-                预览</a></li>
+                Preview</a></li>
         </ul>
         {{ else if type==='pdf' }}
         <div id="op-preview-pdf" data-url="{{ url }}"></div>
@@ -189,9 +227,9 @@
             });
         </script>
         {{ else if type==='bigText'}}
-        <p style="text-align: center;" class="mb-0">该文本文件太大, 不支持预览 :-(</p>
+        <p style="text-align: center;" class="mb-0">The text file is too large and does not support preview :-(</p>
         {{ else }}
-        <p style="text-align: center;" class="mb-0">此格式({{ $V.file.mime }})不支持预览 :-(</p>
+        <p style="text-align: center;" class="mb-0">this format ({{ $V.file.mime }}) Preview is not supported :-(</p>
         {{ /if }}
     </div>
     <script src="https://cdn.staticfile.org/clipboard.js/2.0.8/clipboard.min.js"></script>
@@ -234,7 +272,7 @@
         {{ /if }}
     </div>
     <div class="text-right py-3 pl-3">
-        <a class="text-muted" target="_blank" href="https://github.com/ukuq/onepoint">Just One Point.</a>
+        <a class="text-muted" target="_blank" href="https://github.com/darkmaster420/onepoint">Onepoint</a>
         <a class="text-muted ml-2" href="{{$V.refreshHref}}">Cache {{ $V.cacheTime?'Hit':'Miss'}}.</a>
     </div>
     {{@ $V.site.html }}

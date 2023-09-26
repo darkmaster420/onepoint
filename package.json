@@ -1,7 +1,7 @@
 {
-  "author": "ukuq",
+  "author": "darkmaster420",
   "bugs": {
-    "url": "https://github.com/ukuq/onepoint/issues"
+    "url": "https://github.com/darkmaster420/onepoint/issues"
   },
   "dependencies": {},
   "description": "a tiny file index and manage program",
@@ -17,7 +17,7 @@
   "files": [
     "lib"
   ],
-  "homepage": "https://github.com/ukuq/onepoint#readme",
+  "homepage": "https://github.com/darkmaster420/onepoint#readme",
   "keywords": [
     "onepoint",
     "onedrive",
@@ -36,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ukuq/onepoint.git"
+    "url": "git+https://github.com/darkmaster420/onepoint.git"
   },
   "scripts": {
     "__local_start": "node lib/starters/local-test.js",
